@@ -2,34 +2,10 @@ import Link from 'next/link'
 import {useRef} from 'react'
 import Router from 'next/router'
 
-export const getStaticPaths = async () => {
-  let data;
-  let paths;
-  try {
-  const res = await fetch('https://limitless-forest-49003.herokuapp.com/posts');
-  data = await res.json();
-  paths = data.map(posts => { 
-    return {
-      params: {postId: posts.id.toString() }
-    }
-  })
-  }
-  catch (e) {
-    paths = [{
-      params: {postId: "0"}
-    }]
-  };
-  return {
-    paths,
-    fallback: true,
-  }
-}
-
-
-export const getStaticProps = async (context) => {
+export const getServerSideProps = async (context) => {
   
   try {
-    const id = context.params.postId;
+  const id = context.query.postId;
   const res = await fetch('https://limitless-forest-49003.herokuapp.com/posts/' + id);
   const data = await res.json();
     return {
@@ -50,7 +26,7 @@ const EditPost = ({ posts,error }) => {
   const idInputRef=useRef();
   const warningMessage=useRef();
   let content;
-  
+
   const submitHandler=(event)=> {
     event.preventDefault();
     warningMessage.current.textContent="Please Wait"
